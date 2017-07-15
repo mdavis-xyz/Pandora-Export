@@ -11,7 +11,7 @@ You can use this script to download a list of your likes and dislikes, to help m
 ## Usage
 
 * Download this git repo
- * Use `git clone <THIS URL>`; or
+ * Use `git clone git@github.com:mlda065/Pandora-Export.git`; or
  * Download the zip using the button in the top right of the github page
 * You'll need Python3 and the `requests` library
  * Run The makescript with `./makescript` to create a virtual environment; or
