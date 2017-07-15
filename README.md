@@ -16,7 +16,7 @@ You can use this script to download a list of your likes and dislikes, to help m
 * You'll need Python3 and the `requests` library
  * Run The makescript with `./makescript` to create a virtual environment; or
  * Run `pip install --user requests`
-* Run the main script with `python pandora.py`
+* Run the main script with `python export.py`
 * The results are saved in `output.json`. View it with any text editor or browser
 
 ## Security
