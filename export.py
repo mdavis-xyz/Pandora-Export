@@ -87,19 +87,18 @@ def getLikes():
     # If you want the final output to be formatted a particular way
     # do that here
 
-    return data
+    fullFileName='full.json'
+    print('Saving full data to file %s' % fullFileName)
+    with open(fullFileName, 'w') as fp:
+        json.dump(info, fp, indent=3)
+    print('saved full data to %s' % fullFileName)
 
-def saveLikes(data,fileName):
-    print("Saving data to file %s" % fileName)
-    with open(fileName, 'w') as fp:
+    neatFileName = 'neat.json'
+    print("Saving summarised data to file %s" % neatFileName)
+    with open(neatFileName, 'w') as fp:
         json.dump(data, fp, indent=3)
-    print('saved data to %s' % fileName)
+    print('saved summarised data to %s' % neatFileName)
 
 if __name__ == "__main__":
-
-    data = getLikes()
-
-    pp.pprint(data)
-
-    fileName = "./output.json"
-    saveLikes(data,fileName)
+    getLikes()
+    print('Done')

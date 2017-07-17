@@ -1,4 +1,6 @@
 output.json
+full.json
+neat.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
