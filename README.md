@@ -16,7 +16,10 @@ You can use this script to download a list of your likes and dislikes, to help m
 * You'll need Python3 and the `requests` library
  * Run The makescript with `./makescript` to create a virtual environment; or
  * Run `pip install --user requests`
-* Run the main script with `python export.py`
+* Run the script
+ * To run a GUI (graphical interface) on Linux, use `python export_gui.py`
+ * To run it on a Mac through a browser interface, use `python export_web.py`
+ * To run it in a terminal (Mac or Linux, maybe Windows too), use `python export.py`
 * The summarised human-readable results are saved in `neat.json`. View it with any text editor or browser
 * `full.json` contains the full list of stations, with each like associated with each station. Eventually I might write a script which will read this file and populate a blank account with your old info. Effectively *copying* your account. This would be useful if you use a VPN to circumvent geo-blocking, to create a blank American account.
 
@@ -39,3 +42,6 @@ I used the python library for Pandora from the [Pithos](https://github.com/pitho
 >
 > You should have received a copy of the GNU General Public License along
 > with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+The GUI (web and tkinter) were written by [phlummox](https://github.com/phlummox).

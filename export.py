@@ -1,4 +1,6 @@
-# This script was written by Matthew Davis in July 2017.
+#!/usr/bin/env python3
+##
+### This script was written by Matthew Davis in July 2017.
 # It uses the Pandora library writte by Kevin Mehall <km@kevinmehall.net> and Christopher Eby <kreed@kreed.org>
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 3, as published
@@ -18,38 +20,45 @@ import pprint as pp
 import pandora
 import getpass
 # from multiprocessing import Pool
+from io import StringIO 
 
-def getLikes():
+class Exporter(object):
 
-    p = pandora.Pandora()
+  def __init__(self):
+    object.__init__(self)
+    self.pan = pandora.Pandora()
 
+  def login(self, userid, password):
     client = pandora.data.client_keys[pandora.data.default_client_id]
-    user = input("Enter your username (which is probably an email address)\n")
-    pwd = getpass.getpass()
-    print("Conecting ...")
-    p.connect(client, user, pwd)
+    print("Connecting ...")
+    self.pan.connect(client, userid, password)
     print("Connected")
 
+  def getLikes(self):
+
     print("Getting list of your stations")
-    stations = p.get_stations()
+    stations = self.pan.get_stations()
     print("Got list of station names")
 
     print("Looking up thumbs for each station")
-    info = [s.get_info(extended=True) for s in stations]
+    def getInfo(s):
+      print("#", end="", flush=True)
+      return s.get_info(extended=True)
+
+    fullData = [getInfo(s) for s in stations]
 
     # This doesn't work, because something isn't picklable
-    # with Pool(4) as p:
-    #     info = p.map(lambda s:s.get_info(extended=True), stations)
+    # with Pool(4) as self.pandora:
+    #     fullData = self.pandora.map(lambda s:s.get_info(extended=True), stations)
     print("Got thumbs for each station")
 
     print('Formatting results')
-    station_base = [s['music'] for s in info if 'music' in s]
-
+    station_base = [s['music'] for s in fullData if 'music' in s]
 
     # likes = {y:[x[y] for x in likes_raw if y in x] for y in ['artists','genres','songs']}
     # dislikes = {y:[x[y] for x in dislikes_raw if y in x] for y in ['artists','genres','songs']}
 
-    data = {
+    neatData = {
         'thumbsUp':{
             'artists':[],
             'songs':[],
@@ -65,40 +74,65 @@ def getLikes():
     for x in station_base:
         if 'songs' in x:
             songs = [{'name':s['artistName'],'artist':s['artistName']} for s in x['songs']]
-            data['thumbsUp']['songs'].extend(songs)
+            neatData['thumbsUp']['songs'].extend(songs)
         if 'genres' in x:
             genres = [g['genreName'] for g in x['genres']]
-            data['thumbsUp']['genres'].extend(genres)
+            neatData['thumbsUp']['genres'].extend(genres)
         if 'artists' in x:
             artists = [a['artistName'] for a in x['artists']]
-            data['thumbsUp']['artists'].extend(artists)
+            neatData['thumbsUp']['artists'].extend(artists)
 
     for direction in ['thumbsUp','thumbsDown']:
-        for station in info:
+        for station in fullData:
             if 'feedback' in station:
                 for x in station['feedback'][direction]:
                     if 'songName' in x:
-                        data[direction]['songs'].append({'name':x['songName'],'artist':x['artistName']})
+                        neatData[direction]['songs'].append({'name':x['songName'],'artist':x['artistName']})
                     else:
                         assert('artistName' in x)
-                        data[direction]['artists'].append(x['artistName'])
+                        neatData[direction]['artists'].append(x['artistName'])
+    
+    self.neatData = neatData
+    self.fullData = fullData
 
+  def getJson(self, filename):
+    neatData = self.neatData
+    fullData = self.fullData
+    
+    if filename == "full.json":
+      theData = fullData
+    elif filename == "neat.json":
+      theData = neatData
+    else:
+      raise Exception("bad json name")
+
+    io = StringIO()
+    json.dump(theData, io)
+    return io.getvalue()
+
+  def save(self, fullFileName='full.json', neatFileName = 'neat.json'):
+    neatData = self.neatData
+    fullData = self.fullData
 
     # If you want the final output to be formatted a particular way
     # do that here
-
-    fullFileName='full.json'
-    print('Saving full data to file %s' % fullFileName)
+    print('Saving full neatData to file %s' % fullFileName)
     with open(fullFileName, 'w') as fp:
-        json.dump(info, fp, indent=3)
-    print('saved full data to %s' % fullFileName)
+        json.dump(fullData, fp, indent=3)
+    print('saved full neatData to %s' % fullFileName)
 
-    neatFileName = 'neat.json'
-    print("Saving summarised data to file %s" % neatFileName)
+    print("Saving summarised neatData to file %s" % neatFileName)
     with open(neatFileName, 'w') as fp:
-        json.dump(data, fp, indent=3)
+        json.dump(neatData, fp, indent=3)
     print('saved summarised data to %s' % neatFileName)
 
-if __name__ == "__main__":
-    getLikes()
+MAIN="__main__"
+
+if __name__ == MAIN:
+    exporter = Exporter()
+    user = input("Enter your username (which is probably an email address)\n")
+    pwd = getpass.getpass()
+    exporter.login(user, pwd)
+    exporter.getLikes()
+    exporter.save()
     print('Done')
