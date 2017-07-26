@@ -1,0 +1,5 @@
+wheel
+pypiwin32
+six
+pyOpenSSL
+pyinstaller

@@ -1,0 +1,140 @@
+<html>
+
+<head>
+  <title>pandora exporter</title>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+  <script>
+
+  var loginClicked = function() {
+    $("#loginBtn").prop("disabled", true);
+    console.log("clicked");
+    userid = $("#useridInp").val()
+    password = $("#passwordInp").val()
+    doExport(userid, password);
+  }
+
+  var jsonQuerier;
+
+  var queryForJson = function() {
+    jsonQuerier = setInterval(function(){
+      console.log("periodic...");
+      var http = new XMLHttpRequest();
+      var url = "/full.json";
+      http.open("GET", url, true);
+
+      http.onreadystatechange = function() {//Call when state changes.
+          if(http.readyState == 4 && http.status == 200) {
+            clearInterval(jsonQuerier); 
+            $("#fullJsonBtn").prop("disabled", false);
+            $("#neatJsonBtn").prop("disabled", false);
+            $("#message").html("thumbs-up data fetched, click buttons to download");
+          }
+      }
+      http.send();
+    }, 16000); // 16 secs
+  }
+
+  var doExport = function(userid, password) {
+
+
+    var http = new XMLHttpRequest();
+    var url = "/export";
+    var params = "userid=" + encodeURIComponent(userid) + "&password="
+      + encodeURIComponent(password);
+    http.open("POST", url, true);
+    
+    //Send the proper header information along with the request
+    http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    
+    http.onreadystatechange = function() {//Call a function when the state changes.
+        if(http.readyState == 4 && http.status == 200) {
+            $('#login').hide()
+            $("#fetching").show()
+            console.log("got login resp: " + http.responseText);
+            queryForJson();
+        }
+    }
+    http.send(params);
+  }
+
+  </script>
+
+  <style>
+    .panel {
+      padding: 10pt;
+      border: 1pt black solid;
+      width: 90%;
+      margin: auto;
+    }
+
+    .hidden {
+      display: none;  
+    }
+
+    .linkButton a:hover {
+      text-decoration: none !important;
+    }
+
+    .linkButton {
+      text-decoration: none !important;
+      border: none !important;
+    }
+
+
+  </style>
+
+</head>
+
+<body>
+<div class="content">
+
+<h1>pandora exporter</h1>
+
+<div id="fetching" class="panel hidden">
+  <div id="message">
+  logged in, fetching thumbs-up...
+  </div>
+  <br>
+  <div style="width: 90%; margin: auto; text-align: center;">
+    <a href="full.json" download="" class="linkButton" >
+      <button type="submit" id="fullJsonBtn" disabled="true" >full.json</button>
+    </a>
+    <div style="display: inline-block; width: 1em;"></div>
+    <a href="neat.json" download="" class="linkButton" >
+      <button type="submit" id="neatJsonBtn" disabled="true" >neat.json</button>
+    </a>
+  </div>
+</div>
+
+
+<div id="login" class="panel">
+  <div>
+    <table>
+    <tr>
+      <td>userid (an email address, probably):</td>
+      <td><input type="text" id="useridInp" size="40" ></input></td>
+    </tr>
+    <tr>
+      <td>password:</td>
+      <td><input type="password" id="passwordInp" size="40" /></td>
+    </tr>
+    </table>
+    <br>
+    <br/>
+  <div>
+
+  <div style="width: 90%; margin: auto; text-align: center;">
+  <button type="button" id="loginBtn" onClick="loginClicked();">login</button>
+  </div>
+   
+</div>
+
+
+</div>
+<!-- content -->
+
+
+
+

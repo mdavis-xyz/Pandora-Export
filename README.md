@@ -23,6 +23,11 @@ You can use this script to download a list of your likes and dislikes, to help m
 * The summarised human-readable results are saved in `neat.json`. View it with any text editor or browser
 * `full.json` contains the full list of stations, with each like associated with each station. Eventually I might write a script which will read this file and populate a blank account with your old info. Effectively *copying* your account. This would be useful if you use a VPN to circumvent geo-blocking, to create a blank American account.
 
+## Troubleshooting
+
+* This probably won't work if you have a VPN enabled (damn music publishers and their anti-anti-geoblocking measures)
+* If you can't use the web method, try changing the 'port'. Down the bottom of `export_web.py` is the number "8080". Change it to another number, e.g. 8081. If you use 'syncthing', this is necessary.
+
 ## Security
 
 I'm honestly not exactly sure what's going on with encryption of passwords and such. I'm just blindly using someone else's library (mentioned below). Personally I'm not too concerned because my account will be deleted in a few days. If you are concerned, just delete your payment info from your account, and make sure your password is completely unrelated to any other password you use.
